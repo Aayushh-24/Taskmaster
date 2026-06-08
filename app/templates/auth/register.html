@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Register — TaskMaster{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-brand">
+        <div class="brand-mark">TM</div>
+        <h1>Task<span>Master</span></h1>
+        <p>Manage. Track. Dominate.</p>
+    </div>
+
+    <div class="auth-card">
+        <div class="auth-card-header">
+            <h2>Create account</h2>
+            <p>Start managing tasks today</p>
+        </div>
+
+        <form id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="john_doe" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password <small>(min 6 chars)</small></label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            <div id="authError" class="auth-error" style="display:none;"></div>
+            <button type="submit" class="btn-primary" id="registerBtn">
+                <span>Create Account</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('registerBtn');
+    const errEl = document.getElementById('authError');
+    btn.disabled = true;
+    btn.innerHTML = '<span>Creating…</span>';
+    errEl.style.display = 'none';
+
+    const res = await fetch('/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+        })
+    });
+    const data = await res.json();
+    if (data.success) {
+        window.location.href = '/auth/login';
+    } else {
+        errEl.textContent = data.message;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<span>Create Account</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    }
+});
+</script>
+{% endblock %}
