@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 from app import create_app, socketio
 from app.sockets import *  # Register WebSocket event handlers
 
